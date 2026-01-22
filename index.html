@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Puzzle Game</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Trebuchet MS', sans-serif;
+    background: #f0f4ff;
+    text-align: center;
+  }
+
+  /* LOADING SCREEN */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: #0a1cff;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loader {
+    width: 70px;
+    height: 70px;
+    border: 8px solid #fff;
+    border-top: 8px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
+
+  /* GAME */
+  #game {
+    display: none;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 28px;
+    color: #0a1cff;
+  }
+
+  .level {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .board {
+    width: 90vw;
+    max-width: 320px;
+    margin: auto;
+    display: grid;
+    gap: 8px;
+  }
+
+  .tile {
+    background: #0a1cff;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    user-select: none;
+  }
+
+  .empty {
+    background: #ccc;
+  }
+
+  .footer {
+    margin-top: 25px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #0066ff;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loader"></div>
+  <h1>Ahmed Ali Asif</h1>
+</div>
+
+<!-- GAME -->
+<div id="game">
+  <h2>Number Puzzle</h2>
+  <div class="level">Level: <span id="level">1</span></div>
+  <div class="board" id="board"></div>
+  <div class="footer">Official Website by MR AMD gam</div>
+</div>
+
+<script>
+  let level = 1;
+  let size = 3;
+  let tiles = [];
+
+  setTimeout(() => {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("game").style.display = "block";
+    startLevel();
+  }, 3000);
+
+  function startLevel() {
+    size = Math.min(3 + Math.floor((level - 1) / 3), 5);
+    document.getElementById("level").innerText = level;
+
+    tiles = [];
+    for (let i = 1; i < size * size; i++) tiles.push(i);
+    tiles.push("");
+
+    tiles.sort(() => Math.random() - 0.5);
+    drawBoard();
+  }
+
+  function drawBoard() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+    tiles.forEach((v, i) => {
+      const d = document.createElement("div");
+      d.className = v === "" ? "tile empty" : "tile";
+      d.innerText = v;
+      d.onclick = () => move(i);
+      board.appendChild(d);
+    });
+  }
+
+  function move(i) {
+    const e = tiles.indexOf("");
+    const valid = [e-1, e+1, e-size, e+size];
+    if (valid.includes(i)) {
+      [tiles[i], tiles[e]] = [tiles[e], tiles[i]];
+      drawBoard();
+      checkWin();
+    }
+  }
+
+  function checkWin() {
+    let win = [];
+    for (let i = 1; i < size * size; i++) win.push(i);
+    win.push("");
+
+    if (JSON.stringify(tiles) === JSON.stringify(win)) {
+      if (level < 15) {
+        level++;
+        setTimeout(startLevel, 800);
+      } else {
+        alert("🎉 All 15 Levels Completed!");
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
